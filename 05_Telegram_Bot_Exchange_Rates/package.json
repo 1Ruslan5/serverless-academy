@@ -3,7 +3,6 @@
     "axios": "^1.5.1",
     "node-cache": "^5.1.2",
     "node-telegram-bot-api": "^0.63.0"
-<<<<<<< HEAD
   },
   "name": "05_telegram_bot_exchange_rates",
   "version": "1.0.0",
@@ -17,7 +16,4 @@
   "author": "",
   "license": "ISC",
   "description": ""
-=======
-  }
->>>>>>> 85b25ffb430c71fc38667f743a7a38ef5427e7a8
 }
