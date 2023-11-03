@@ -60,7 +60,7 @@ function start() {
 function separateWords(type, array) {
     switch (type) {
         case 'n':
-            return array.filter((value) => value.match(/^[0-9]*$/))
+            return array.filter((value) => value.match(/(^[-+]?([0-9]+)(\.[0-9]+)?)$/))
         case 'w':
             return array.filter((value) => value.match(/[A-Za-z]/))
     }

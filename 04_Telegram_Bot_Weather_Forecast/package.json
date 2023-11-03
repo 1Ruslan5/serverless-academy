@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "axios": "^1.5.1",
+    "node-telegram-bot-api": "^0.63.0"
+  },
+  "name": "04_telegram_bot_weather_forecast",
+  "version": "1.0.0",
+  "main": "main.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "node --env-file .env ./main.mjs",
+    "start:sample": "node --env-file .sample.env ./main.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

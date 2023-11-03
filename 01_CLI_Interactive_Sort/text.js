@@ -10,7 +10,7 @@ const condition =
 6. Display only unique values from the of words and numbers entered by the user;
 To exit the program enter word "exit"
 
-Select (1-7) and press ENTER:`;
+Select (1-6) and press ENTER:`;
 const farewell = 
 "\nGood bye! Come back again!"
 
