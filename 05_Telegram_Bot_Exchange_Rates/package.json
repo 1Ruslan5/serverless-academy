@@ -13,7 +13,7 @@
     "start:sample": "node --env-file .sample.env ./main.mjs"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ruslan S",
   "license": "ISC",
   "description": ""
 }

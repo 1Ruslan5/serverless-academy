@@ -13,10 +13,12 @@ app.set('trust proxy', true);
 app.get('/', (req, res) => {
     const ip = req.ip;
     const index = searchIP(arrayIP, ipToNumber(ip));
-    const country = getCountry(array[index]);
+    const json = getCountry(array[index]);
     res.json({
         ip,
-        country
+        startRange: json.startIP,
+        endRange: json.endIP,
+        country: json.country
     })
 });
 
@@ -48,7 +50,11 @@ function readCSV (){
 
 function getCountry (string) {
     const values = string.split(',');
-    return values[3].replace(/"/g, '')
+    return{
+        startIP: values[0].replace(/"/g, ''),
+        endIP: values[1].replace(/"/g, ''),
+        country: values[3].replace(/"/g, '')
+    }
 }
 
 function ipToNumber(ip) {

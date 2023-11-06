@@ -15,9 +15,9 @@ class Repository {
 
     async createUser(user) {
         try {
-            const { email, hashPassword, refresh_token } = user;
-            const result = await this.pool.query("INSERT INTO users(email, password, refresh_token) VALUES ($1,$2,$3) RETURNING id",
-                [email, hashPassword, refresh_token]);
+            const { email, hashPassword, refresh_token, uuid } = user;
+            const result = await this.pool.query("INSERT INTO users(email, password, refresh_token, uuid) VALUES ($1,$2,$3,$4) RETURNING id",
+                [email, hashPassword, refresh_token, uuid]);
             return result.rows[0].id
         } catch (err) {
             console.log(err);
@@ -31,6 +31,7 @@ class Repository {
                 id: result.rows[0].id,
                 email: result.rows[0].email,
                 password: result.rows[0].password,
+                uuid: result.rows[0].uuid
             }
         } catch (err) {
             console.log(err);

@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "node --env-file .env ./server.mjs",
-    "start:sample": "node --env-file .sample.env ./server.mjs"
+    "start:dev": "node --env-file .env ./main.mjs",
+    "start:sample": "node --env-file .sample.env ./main.mjs"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ruslan S",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
