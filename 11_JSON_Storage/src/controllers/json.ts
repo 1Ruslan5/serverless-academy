@@ -37,18 +37,22 @@ jsonR.get('/*', async (req, res) => {
         const { url: link } = req;
 
         if (!link) {
-            return res.status(401).json(responseJSON(401, { error: messages.emptyLink }));
+            res.statusCode = 401;
+            return res.json(responseJSON(401, { error: messages.emptyLink }));
         }
 
         const json = await repository.getJSON(link);
         if (!json) {
-            return res.status(404).json(responseJSON(404, { error: messages.notFoundLink }));
+            res.statusCode = 404;
+            return res.json(responseJSON(404, { error: messages.notFoundLink }));
         }
 
-        return res.status(201).json(responseJSON(200,  json.body))
+        res.statusCode = 200;
+        return res.json(responseJSON(200,  json.body))
     } catch (err) {
         console.log(err);
-        res.status(500).json(responseJSON(500, { error: 'Internal Server Error' }))
+        res.statusCode = 500;
+        res.json(responseJSON(500, { error: 'Internal Server Error' }))
     }
 })
 

@@ -1,5 +1,5 @@
 import { Collection, Db, Document, MongoClient } from "mongodb";
-import { jsonObject } from "../module/jsonObject";
+import { jsonObject } from "../module/interafaceJsonObject";
 
 class Repository {
     client: MongoClient;
