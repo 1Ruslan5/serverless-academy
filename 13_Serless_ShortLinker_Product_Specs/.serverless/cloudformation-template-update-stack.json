@@ -1,0 +1,2080 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "CustomAuthorizerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-customAuthorizer"
+      }
+    },
+    "SignUnderscoreupLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-sign_up"
+      }
+    },
+    "SignUnderscoreinLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-sign_in"
+      }
+    },
+    "VerifyUserLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-verifyUser"
+      }
+    },
+    "CreateShortLinkLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-createShortLink"
+      }
+    },
+    "ListAllLinksLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-listAllLinks"
+      }
+    },
+    "DeactivateLinksLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-deactivateLinks"
+      }
+    },
+    "MoveByShortLinkLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-moveByShortLink"
+      }
+    },
+    "CheckValidLinksLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-checkValidLinks"
+      }
+    },
+    "CallSQSLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/aws-typescript-api-shortLink-callSQS"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "aws-typescript-api",
+                  "shortLink",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                    "logs:TagResource"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/aws-typescript-api-shortLink*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/aws-typescript-api-shortLink*:*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:*",
+                    "sqs:*",
+                    "ses:*",
+                    "events:*"
+                  ],
+                  "Resource": [
+                    "arn:aws:dynamodb:eu-central-1:*:table/user",
+                    "arn:aws:dynamodb:eu-central-1:*:table/user/index/email-index",
+                    "arn:aws:dynamodb:eu-central-1:*:table/link",
+                    "arn:aws:dynamodb:eu-central-1:*:table/link/index/user_id-index",
+                    "arn:aws:dynamodb:eu-central-1:*:table/link/index/shortLink-index-index",
+                    "*"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "aws-typescript-api",
+              "shortLink",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "CustomAuthorizerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/customAuthorizer.zip"
+        },
+        "Handler": "src/controllers/user/authorizer.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-customAuthorizer",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomAuthorizerLogGroup"
+      ]
+    },
+    "SignUnderscoreupLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/sign_up.zip"
+        },
+        "Handler": "src/controllers/user/sign_up.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-sign_up",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "SignUnderscoreupLogGroup"
+      ]
+    },
+    "SignUnderscoreinLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/sign_in.zip"
+        },
+        "Handler": "src/controllers/user/sign_in.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-sign_in",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "SignUnderscoreinLogGroup"
+      ]
+    },
+    "VerifyUserLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/verifyUser.zip"
+        },
+        "Handler": "src/controllers/user/verifyUser.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-verifyUser",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "VerifyUserLogGroup"
+      ]
+    },
+    "CreateShortLinkLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/createShortLink.zip"
+        },
+        "Handler": "src/controllers/links/createShortLink.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-createShortLink",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "CreateShortLinkLogGroup"
+      ]
+    },
+    "ListAllLinksLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/listAllLinks.zip"
+        },
+        "Handler": "src/controllers/links/listAllLinks.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-listAllLinks",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ListAllLinksLogGroup"
+      ]
+    },
+    "DeactivateLinksLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/deactivateLinks.zip"
+        },
+        "Handler": "src/controllers/links/deactivateLink.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-deactivateLinks",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "DeactivateLinksLogGroup"
+      ]
+    },
+    "MoveByShortLinkLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/moveByShortLink.zip"
+        },
+        "Handler": "src/controllers/links/moveByShortLink.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-moveByShortLink",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MoveByShortLinkLogGroup"
+      ]
+    },
+    "CheckValidLinksLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/checkValidLinks.zip"
+        },
+        "Handler": "src/controllers/links/checkValidLinks.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-checkValidLinks",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "CheckValidLinksLogGroup"
+      ]
+    },
+    "CallSQSLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/callSQS.zip"
+        },
+        "Handler": "src/controllers/links/callSQS.handler",
+        "Runtime": "nodejs18.x",
+        "FunctionName": "aws-typescript-api-shortLink-callSQS",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "SQS_LINK": {
+              "Ref": "SESQueue"
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+            "AWS_DYNAMODB_TABLE_USER": "user",
+            "AWS_DYNAMODB_TABLE_LINK": "link",
+            "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+            "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+            "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+            "SECRET_KEY": "1l23M4he054OInad8",
+            "SES_EMAIL": "sultrus15@gmail.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "CallSQSLogGroup"
+      ]
+    },
+    "ListAllLinksLambdaVersiono1cE4bRmMUlijldAleuHoRGCdHuKxPfzb5VqKUkaqLQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ListAllLinksLambdaFunction"
+        },
+        "CodeSha256": "dFWqdMZSWfCpCxB1rIvrZpHe2Q+PilPgvcawoDWP45Y="
+      }
+    },
+    "DeactivateLinksLambdaVersionWZeuCsJnYj29mSlIO8PpoEyOEFp0GrJlvCEbjBLcfU": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "DeactivateLinksLambdaFunction"
+        },
+        "CodeSha256": "39DaGy9xQ7QvJLnvihREmZZmtz/hI48rGmAl+SFW4ZQ="
+      }
+    },
+    "CustomAuthorizerLambdaVersion4ffi5y4W3NKs18sIAKP5hG5pcFVJKLlYtYA4821HLbQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CustomAuthorizerLambdaFunction"
+        },
+        "CodeSha256": "gQQmxiShuJc41MerTTTqYiQ0S6p3wFxxspak3AfuCsE="
+      }
+    },
+    "VerifyUserLambdaVersiondlmUxFiZUoyB1yASd0XRxAZWBXTd5WETu4aVzK3W4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "VerifyUserLambdaFunction"
+        },
+        "CodeSha256": "mQ0MFDX2dzpPMFWQ7InMqKbThW7vTKmmUjI/h5k0Adk="
+      }
+    },
+    "MoveByShortLinkLambdaVersionNPPu52vHJhfJ1WgpXLO0H6XqE6cfP7adwRr8Dl2w": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "MoveByShortLinkLambdaFunction"
+        },
+        "CodeSha256": "myoJ6fQSVG2NJmoEABink5nNBoI4S4+21CXzQfqphP4="
+      }
+    },
+    "SignUnderscoreupLambdaVersiontrzJp537oc5WnrkGqGKNY7AoiTtXMNFokAfw6yJDik": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SignUnderscoreupLambdaFunction"
+        },
+        "CodeSha256": "jdM4vupwLT70OgZ9xSppFB3xRcz7H+F5ld+Yg4v3QqA="
+      }
+    },
+    "SignUnderscoreinLambdaVersionzTmUa7jcrxibI3jalAYNgnBrwbSm7qHDSTMLJ5D2oU": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SignUnderscoreinLambdaFunction"
+        },
+        "CodeSha256": "IvVc7aitS1y90oy+9IXl+S/i5qhf6AL/FYRwmfm3NUM="
+      }
+    },
+    "CreateShortLinkLambdaVersion8PyZPxvrqw0rWv9eTQsgFuzBevSfzSOSIcGeiJfVFc": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CreateShortLinkLambdaFunction"
+        },
+        "CodeSha256": "dqiZUsTpalZtB9hgfY1g3KGqmtaCxYfOkqhkJHiRdhA="
+      }
+    },
+    "CallSQSLambdaVersion5nw1TtZsYQX2s0Eq5GlmMYs96ZrA99Rc4jOX8NjOZw": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CallSQSLambdaFunction"
+        },
+        "CodeSha256": "OR/dEfhJu0Vrr+H1KEekcYtIvDZQO+mGLlYhTZZQP3Q="
+      }
+    },
+    "CheckValidLinksLambdaVersionZjaa6nsHNMob3ENBW9L2cxvXy1SG2YaYqQXo3xxVIQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "CheckValidLinksLambdaFunction"
+        },
+        "CodeSha256": "WhliukM7TXVhOI3U39VS+OEqAow+QwtDKM7uRGjA8hc="
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "aws-typescript-api-shortLink",
+        "EndpointConfiguration": {
+          "Types": [
+            "EDGE"
+          ]
+        },
+        "Policy": "",
+        "MinimumCompressionSize": 1024
+      }
+    },
+    "ApiGatewayResourceUser": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "user",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUserSignup": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceUser"
+        },
+        "PathPart": "sign_up",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUserSignin": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceUser"
+        },
+        "PathPart": "sign_in",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceVerify": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "verify",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceVerifyProxyVar": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceVerify"
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceLink": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "link",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceLinkCreateshortlink": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceLink"
+        },
+        "PathPart": "createShortLink",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceLinkListalllinks": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceLink"
+        },
+        "PathPart": "listAllLinks",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceLinkDeactivatelink": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceLink"
+        },
+        "PathPart": "deactivateLink",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceProxyVar": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodLinkCreateshortlinkOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLinkCreateshortlink"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodLinkListalllinksOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLinkListalllinks"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodLinkDeactivatelinkOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLinkDeactivatelink"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodUserSignupPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUserSignup"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "SignUnderscoreupLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "SignUnderscoreupLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUserSigninPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUserSignin"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "SignUnderscoreinLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "SignUnderscoreinLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodVerifyProxyVarGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceVerifyProxyVar"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "VerifyUserLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "VerifyUserLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodLinkCreateshortlinkPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLinkCreateshortlink"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "CustomAuthorizerApiGatewayAuthorizer"
+        },
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "CreateShortLinkLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "CustomAuthorizerApiGatewayAuthorizer"
+      ]
+    },
+    "ApiGatewayMethodLinkListalllinksGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLinkListalllinks"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "CustomAuthorizerApiGatewayAuthorizer"
+        },
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ListAllLinksLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "CustomAuthorizerApiGatewayAuthorizer"
+      ]
+    },
+    "ApiGatewayMethodLinkDeactivatelinkPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLinkDeactivatelink"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "CustomAuthorizerApiGatewayAuthorizer"
+        },
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "DeactivateLinksLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "CustomAuthorizerApiGatewayAuthorizer"
+      ]
+    },
+    "ApiGatewayMethodProxyVarGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceProxyVar"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "MoveByShortLinkLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "MoveByShortLinkLambdaPermissionApiGateway"
+      ]
+    },
+    "CustomAuthorizerApiGatewayAuthorizer": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "customAuthorizer",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "AuthorizerUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "CustomAuthorizerLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        },
+        "Type": "TOKEN"
+      }
+    },
+    "ApiGatewayDeployment1700240469961": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "shortLink"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodLinkCreateshortlinkOptions",
+        "ApiGatewayMethodLinkListalllinksOptions",
+        "ApiGatewayMethodLinkDeactivatelinkOptions",
+        "ApiGatewayMethodUserSignupPost",
+        "ApiGatewayMethodUserSigninPost",
+        "ApiGatewayMethodVerifyProxyVarGet",
+        "ApiGatewayMethodLinkCreateshortlinkPost",
+        "ApiGatewayMethodLinkListalllinksGet",
+        "ApiGatewayMethodLinkDeactivatelinkPost",
+        "ApiGatewayMethodProxyVarGet"
+      ]
+    },
+    "SignUnderscoreupLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "SignUnderscoreupLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "SignUnderscoreinLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "SignUnderscoreinLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "VerifyUserLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "VerifyUserLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "CreateShortLinkLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CreateShortLinkLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "CustomAuthorizerLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CustomAuthorizerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ListAllLinksLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ListAllLinksLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "DeactivateLinksLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DeactivateLinksLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "MoveByShortLinkLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "MoveByShortLinkLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "AwstypescriptapishortLinkcheckValidLinksrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "aws-typescript-api-shortLink-checkValidLinks-rule-1",
+        "ScheduleExpression": "rate(1 hour)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CheckValidLinksLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "aws-typescript-api-shortLink-checkValidLinks-rule-1-target"
+          }
+        ]
+      }
+    },
+    "CheckValidLinksEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CheckValidLinksLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "aws-typescript-api-shortLink-checkValidLinks-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "AwstypescriptapishortLinkcallSQSrule1EventBridgeRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Name": "aws-typescript-api-shortLink-callSQS-rule-1",
+        "ScheduleExpression": "rate(1 minute)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "CallSQSLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "aws-typescript-api-shortLink-callSQS-rule-1-target"
+          }
+        ]
+      }
+    },
+    "CallSQSEventBridgeLambdaPermission1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "CallSQSLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            ":",
+            [
+              "arn",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "events",
+              {
+                "Ref": "AWS::Region"
+              },
+              {
+                "Ref": "AWS::AccountId"
+              },
+              {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "rule",
+                    "aws-typescript-api-shortLink-callSQS-rule-1"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "UsersTable": {
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "Properties": {
+        "TableName": "user",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "email",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "email",
+            "KeyType": "RANGE"
+          }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "email-index",
+            "KeySchema": [
+              {
+                "AttributeName": "email",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "userId-index",
+            "KeySchema": [
+              {
+                "AttributeName": "user_id",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "Replicas": [
+          {
+            "Region": "eu-central-1"
+          },
+          {
+            "Region": "eu-west-2"
+          }
+        ]
+      }
+    },
+    "LinksTable": {
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "Properties": {
+        "TableName": "link",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "link_id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "short_link",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "link_id",
+            "KeyType": "HASH"
+          }
+        ],
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "shortLink-index",
+            "KeySchema": [
+              {
+                "AttributeName": "short_link",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "user_id-index",
+            "KeySchema": [
+              {
+                "AttributeName": "user_id",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES"
+        },
+        "Replicas": [
+          {
+            "Region": "eu-central-1"
+          },
+          {
+            "Region": "eu-west-2"
+          }
+        ]
+      }
+    },
+    "SESQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "SESQueue"
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-ServerlessDeploymentBucketName"
+      }
+    },
+    "ListAllLinksLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ListAllLinksLambdaVersiono1cE4bRmMUlijldAleuHoRGCdHuKxPfzb5VqKUkaqLQ"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-ListAllLinksLambdaFunctionQualifiedArn"
+      }
+    },
+    "DeactivateLinksLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "DeactivateLinksLambdaVersionWZeuCsJnYj29mSlIO8PpoEyOEFp0GrJlvCEbjBLcfU"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-DeactivateLinksLambdaFunctionQualifiedArn"
+      }
+    },
+    "CustomAuthorizerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CustomAuthorizerLambdaVersion4ffi5y4W3NKs18sIAKP5hG5pcFVJKLlYtYA4821HLbQ"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-CustomAuthorizerLambdaFunctionQualifiedArn"
+      }
+    },
+    "VerifyUserLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "VerifyUserLambdaVersiondlmUxFiZUoyB1yASd0XRxAZWBXTd5WETu4aVzK3W4"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-VerifyUserLambdaFunctionQualifiedArn"
+      }
+    },
+    "MoveByShortLinkLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "MoveByShortLinkLambdaVersionNPPu52vHJhfJ1WgpXLO0H6XqE6cfP7adwRr8Dl2w"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-MoveByShortLinkLambdaFunctionQualifiedArn"
+      }
+    },
+    "SignUnderscoreupLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "SignUnderscoreupLambdaVersiontrzJp537oc5WnrkGqGKNY7AoiTtXMNFokAfw6yJDik"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-SignUnderscoreupLambdaFunctionQualifiedArn"
+      }
+    },
+    "SignUnderscoreinLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "SignUnderscoreinLambdaVersionzTmUa7jcrxibI3jalAYNgnBrwbSm7qHDSTMLJ5D2oU"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-SignUnderscoreinLambdaFunctionQualifiedArn"
+      }
+    },
+    "CreateShortLinkLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CreateShortLinkLambdaVersion8PyZPxvrqw0rWv9eTQsgFuzBevSfzSOSIcGeiJfVFc"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-CreateShortLinkLambdaFunctionQualifiedArn"
+      }
+    },
+    "CallSQSLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CallSQSLambdaVersion5nw1TtZsYQX2s0Eq5GlmMYs96ZrA99Rc4jOX8NjOZw"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-CallSQSLambdaFunctionQualifiedArn"
+      }
+    },
+    "CheckValidLinksLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CheckValidLinksLambdaVersionZjaa6nsHNMob3ENBW9L2cxvXy1SG2YaYqQXo3xxVIQ"
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-CheckValidLinksLambdaFunctionQualifiedArn"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/shortLink"
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "sls-aws-typescript-api-shortLink-ServiceEndpoint"
+      }
+    }
+  }
+}

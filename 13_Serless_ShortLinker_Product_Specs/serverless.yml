@@ -1,0 +1,195 @@
+service: aws-typescript-api
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-central-1
+  stage: shortLink
+  apiGateway:
+    minimumCompressionSize: 1024
+    shouldStartNameWithService: true
+  profile: profile-name
+  environment:
+    SQS_LINK: { Ref: SESQueue }
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+    NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000"
+
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - dynamodb:*
+            - sqs:*
+            - ses:*
+            - events:*
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:*:table/user
+            - arn:aws:dynamodb:${aws:region}:*:table/user/index/email-index
+            - arn:aws:dynamodb:${aws:region}:*:table/link
+            - arn:aws:dynamodb:${aws:region}:*:table/link/index/user_id-index
+            - arn:aws:dynamodb:${aws:region}:*:table/link/index/shortLink-index-index
+            - "*"
+
+resources:
+  Resources:
+    UsersTable:
+      Type: "AWS::DynamoDB::GlobalTable"
+      Properties:
+        TableName: "user"
+        AttributeDefinitions:
+          - AttributeName: "user_id"
+            AttributeType: "S"
+          - AttributeName: "email"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "user_id"
+            KeyType: "HASH"
+          - AttributeName: "email"
+            KeyType: "RANGE"
+        GlobalSecondaryIndexes:
+          - IndexName: email-index
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: userId-index
+            KeySchema:
+              - AttributeName: user_id
+                KeyType: HASH
+            Projection:
+              ProjectionType: "ALL"
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        Replicas:
+          - Region: "eu-central-1"
+          - Region: "eu-west-2"
+
+    LinksTable:
+      Type: "AWS::DynamoDB::GlobalTable"
+      Properties:
+        TableName: "link"
+        AttributeDefinitions:
+          - AttributeName: "link_id"
+            AttributeType: "S"
+          - AttributeName: "user_id"
+            AttributeType: "S"
+          - AttributeName: "short_link"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "link_id"
+            KeyType: "HASH"
+        GlobalSecondaryIndexes:
+          - IndexName: shortLink-index
+            KeySchema:
+              - AttributeName: short_link
+                KeyType: HASH
+            Projection:
+              ProjectionType: "ALL"
+          - IndexName: user_id-index
+            KeySchema:
+              - AttributeName: user_id
+                KeyType: HASH
+            Projection:
+              ProjectionType: "ALL"
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        Replicas:
+          - Region: "eu-central-1"
+          - Region: "eu-west-2"
+
+    SESQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: SESQueue
+
+functions:
+  customAuthorizer:
+    handler: src/controllers/user/authorizer.handler
+  sign_up:
+    handler: src/controllers/user/sign_up.handler
+    events:
+      - http:
+          method: "post"
+          path: "user/sign_up"
+  sign_in:
+    handler: src/controllers/user/sign_in.handler
+    events:
+      - http:
+          method: "post"
+          path: "user/sign_in"
+  verifyUser:
+    handler: src/controllers/user/verifyUser.handler
+    events:
+      - http:
+          method: "get"
+          path: "verify/{proxy+}"
+  createShortLink:
+    handler: src/controllers/links/createShortLink.handler
+    events:
+      - http:
+          method: "post"
+          path: "link/createShortLink"
+          authorizer: customAuthorizer
+          cors: true
+  listAllLinks:
+    handler: src/controllers/links/listAllLinks.handler
+    events:
+      - http:
+          method: "get"
+          path: "link/listAllLinks"
+          authorizer: customAuthorizer
+          cors: true
+  deactivateLinks:
+    handler: src/controllers/links/deactivateLink.handler
+    events:
+      - http:
+          method: "post"
+          path: "link/deactivateLink"
+          authorizer: customAuthorizer
+          cors: true
+  moveByShortLink:
+    handler: src/controllers/links/moveByShortLink.handler
+    events:
+      - http:
+          method: "get"
+          path: "{proxy+}"
+  checkValidLinks:
+    handler: src/controllers/links/checkValidLinks.handler
+    events:
+      - eventBridge:
+          schedule: rate(1 hour)
+  callSQS:
+    handler: src/controllers/links/callSQS.handler
+    events:
+      - eventBridge:
+          schedule: rate(1 minute)
+
+package:
+  individually: true
+
+custom:
+  dotenv:
+    path: "./.env"
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    exclude: []
+    target: node18
+    define:
+      require.resolve: null
+    platform: node
+    concurrency: 10
+  serverless-offline:
+    httpPort: 3000
+
+plugins:
+  - serverless-esbuild
+  - serverless-dotenv-plugin
+  - serverless-offline

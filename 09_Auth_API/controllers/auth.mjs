@@ -55,7 +55,7 @@ auth.post('/sign-up', async (req, res) => {
         if (userExistence) return res.status(409).json(responseJSON(409, { error: messages.sameEmail }));
 
         const uuid = v4();
-        const refresh_token = crypto.randomBytes(16).toString('hex');
+        
         const hashPassword = await bcrypt.hash(password, 1);
 
         const userId = await repository.createUser({ email, hashPassword, refresh_token, uuid });
