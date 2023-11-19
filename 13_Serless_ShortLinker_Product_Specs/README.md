@@ -68,16 +68,16 @@ The project is structured as follows:
 
 - **`src/`**: This directory contains the source code of the application.
   - **`controllers/`**: Holds the controller logic for handling requests.
-        - **`links/`**: Contains all endpoints which are related to links.
-        - **`users/`**: Holds all endpoints which are related to users.
+    - **`links/`**: Contains all endpoints which are related to links.
+    - **`users/`**: Holds all endpoints which are related to users.
   - **`models/`**: Includes data models.
-        - **`types-swagger`**: Contains data models for swagger type. 
+    - **`types-swagger`**: Contains data models for swagger type. 
   - **`services/`**: Includes services of AWS. 
   - **`utils/`**: Contains custom utils for make it easier.
-        - **`link`**: Holds function weach using in this project for work with links.
-        - **`responses`**: Contains utils for responses.
-        - **`tokens`**: Contains utils for work with token.
-        - **`validation`**: Holds function using for validate data.
+    - **`link`**: Holds function weach using in this project for work with links.
+    - **`responses`**: Contains utils for responses.
+    - **`tokens`**: Contains utils for work with token.
+    - **`validation`**: Holds function using for validate data.
 
 
 - **`.gitignore`**: Specifies files and directories that should be ignored by comit to repository.
