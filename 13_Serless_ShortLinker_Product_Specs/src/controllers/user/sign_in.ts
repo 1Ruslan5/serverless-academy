@@ -18,14 +18,15 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         if (!validateEmail(email)) return jsonResponse(401, { error: messages.unvalidEmail });
 
         const existenceUser = await dynamodb.findUserByEmail(email);
-        if (existenceUser.Items.length === 0) return jsonResponse(401, { error: messages.notExistEmail });
+        if (existenceUser.Items.length === 0) return jsonResponse(404, { error: messages.notFoundEmail });
 
         const properlyPassword = await bcryptjs.compare(password, existenceUser.Items[0].password);
         if (!properlyPassword) return jsonResponse(401, { error: messages.unvalidPassword });
+        if(!existenceUser.Items[0].verify) return jsonResponse(401, {erorr: messages.notVerify})
 
         const accessToken = jwt.generateToken({ user_id: existenceUser.Items[0].user_id, email }, { expiresIn: '1h' });
 
-        return jsonResponse(200, { accessToken });
+        return jsonResponse(200, {messages:messages.successSignIn, accessToken });
     } catch (err) {
         console.log(err);
         return jsonResponse(500, { message: messages.serverError });

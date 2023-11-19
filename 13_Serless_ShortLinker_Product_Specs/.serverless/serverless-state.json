@@ -244,6 +244,18 @@
                         ]
                       },
                       {
+                        "Effect": "Deny",
+                        "Action": "logs:PutLogEvents",
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/aws-typescript-api-shortLink-swagger-ui:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/aws-typescript-api-shortLink-swagger-json:*"
+                          }
+                        ]
+                      },
+                      {
                         "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][0]"
                       }
                     ]
@@ -273,7 +285,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/customAuthorizer.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/customAuthorizer.zip"
               },
               "Handler": "src/controllers/user/authorizer.handler",
               "Runtime": "nodejs18.x",
@@ -314,7 +326,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/sign_up.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/sign_up.zip"
               },
               "Handler": "src/controllers/user/sign_up.handler",
               "Runtime": "nodejs18.x",
@@ -355,7 +367,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/sign_in.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/sign_in.zip"
               },
               "Handler": "src/controllers/user/sign_in.handler",
               "Runtime": "nodejs18.x",
@@ -396,7 +408,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/verifyUser.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/verifyUser.zip"
               },
               "Handler": "src/controllers/user/verifyUser.handler",
               "Runtime": "nodejs18.x",
@@ -437,7 +449,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/createShortLink.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/createShortLink.zip"
               },
               "Handler": "src/controllers/links/createShortLink.handler",
               "Runtime": "nodejs18.x",
@@ -478,7 +490,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/listAllLinks.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/listAllLinks.zip"
               },
               "Handler": "src/controllers/links/listAllLinks.handler",
               "Runtime": "nodejs18.x",
@@ -519,7 +531,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/deactivateLinks.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/deactivateLinks.zip"
               },
               "Handler": "src/controllers/links/deactivateLink.handler",
               "Runtime": "nodejs18.x",
@@ -560,7 +572,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/moveByShortLink.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/moveByShortLink.zip"
               },
               "Handler": "src/controllers/links/moveByShortLink.handler",
               "Runtime": "nodejs18.x",
@@ -601,7 +613,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/checkValidLinks.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/checkValidLinks.zip"
               },
               "Handler": "src/controllers/links/checkValidLinks.handler",
               "Runtime": "nodejs18.x",
@@ -642,7 +654,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z/callSQS.zip"
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/callSQS.zip"
               },
               "Handler": "src/controllers/links/callSQS.handler",
               "Runtime": "nodejs18.x",
@@ -676,24 +688,110 @@
               "CallSQSLogGroup"
             ]
           },
-          "ListAllLinksLambdaVersiono1cE4bRmMUlijldAleuHoRGCdHuKxPfzb5VqKUkaqLQ": {
+          "SwaggerUILambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/swaggerUI.zip"
+              },
+              "Handler": "swagger/swagger-html.handler",
+              "Runtime": "nodejs18.x",
+              "FunctionName": "aws-typescript-api-shortLink-swagger-ui",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "SQS_LINK": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SQS_LINK\"]"
+                  },
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "AWS_DYNAMODB_TABLE_USER": "user",
+                  "AWS_DYNAMODB_TABLE_LINK": "link",
+                  "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+                  "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+                  "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+                  "SECRET_KEY": "1l23M4he054OInad8",
+                  "SES_EMAIL": "sultrus15@gmail.com"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "SwaggerJSONLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z/swaggerJSON.zip"
+              },
+              "Handler": "swagger/swagger-json.handler",
+              "Runtime": "nodejs18.x",
+              "FunctionName": "aws-typescript-api-shortLink-swagger-json",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "SQS_LINK": {
+                    "$ref": "$[\"service\"][\"provider\"][\"environment\"][\"SQS_LINK\"]"
+                  },
+                  "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                  "NODE_OPTIONS": "--enable-source-maps --stack-trace-limit=1000",
+                  "AWS_DYNAMODB_TABLE_USER": "user",
+                  "AWS_DYNAMODB_TABLE_LINK": "link",
+                  "CLIENT_ID": "v3savcdvebbefhjqqqemhqbu0",
+                  "CLIENT_SECRET": "1hbmq81ve2amidbl4bmgnmmb0en86e9hsb4vkrvcuq1lffm7piep",
+                  "USER_POOL_ID": "eu-central-1_ZSrlBNsta",
+                  "SECRET_KEY": "1l23M4he054OInad8",
+                  "SES_EMAIL": "sultrus15@gmail.com"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "SwaggerUILambdaVersionirybImU1fGFY6g6oSnwbDQIaGS8fW7M2NILj0VP994": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SwaggerUILambdaFunction"
+              },
+              "CodeSha256": "tsFbxWMbI3WJYq+8D/KANXVuiiLg+rVOdmS7jydDFUY="
+            }
+          },
+          "SwaggerJSONLambdaVersionl6ygLAL3RtRXKKSrR9gqjUKZFm2x1iS9lSORgFDYi4": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SwaggerJSONLambdaFunction"
+              },
+              "CodeSha256": "DkQkeKezuHntHE3kTwexyZaB4/g/KJIW5LKRNYzdfeo="
+            }
+          },
+          "ListAllLinksLambdaVersiondaPdLGcxUqJZXe3knlJqZrQ1ziQWpas2q9UinC7QaQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ListAllLinksLambdaFunction"
               },
-              "CodeSha256": "dFWqdMZSWfCpCxB1rIvrZpHe2Q+PilPgvcawoDWP45Y="
-            }
-          },
-          "DeactivateLinksLambdaVersionWZeuCsJnYj29mSlIO8PpoEyOEFp0GrJlvCEbjBLcfU": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
-            "Properties": {
-              "FunctionName": {
-                "Ref": "DeactivateLinksLambdaFunction"
-              },
-              "CodeSha256": "39DaGy9xQ7QvJLnvihREmZZmtz/hI48rGmAl+SFW4ZQ="
+              "CodeSha256": "tCLBezFyuRplib8HUICSO3rGXxzKKoRk4wfEUPL4L0o="
             }
           },
           "CustomAuthorizerLambdaVersion4ffi5y4W3NKs18sIAKP5hG5pcFVJKLlYtYA4821HLbQ": {
@@ -706,74 +804,84 @@
               "CodeSha256": "gQQmxiShuJc41MerTTTqYiQ0S6p3wFxxspak3AfuCsE="
             }
           },
-          "VerifyUserLambdaVersiondlmUxFiZUoyB1yASd0XRxAZWBXTd5WETu4aVzK3W4": {
+          "VerifyUserLambdaVersionDX15HSIlholY3YTqkk4wyh6pMAhggfBu8b0AuWU6M": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "VerifyUserLambdaFunction"
               },
-              "CodeSha256": "mQ0MFDX2dzpPMFWQ7InMqKbThW7vTKmmUjI/h5k0Adk="
+              "CodeSha256": "zITkBilAUGXz+Jclh3RvapRwptK/Zc+fVpcOZiY2ENE="
             }
           },
-          "MoveByShortLinkLambdaVersionNPPu52vHJhfJ1WgpXLO0H6XqE6cfP7adwRr8Dl2w": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
-            "Properties": {
-              "FunctionName": {
-                "Ref": "MoveByShortLinkLambdaFunction"
-              },
-              "CodeSha256": "myoJ6fQSVG2NJmoEABink5nNBoI4S4+21CXzQfqphP4="
-            }
-          },
-          "SignUnderscoreupLambdaVersiontrzJp537oc5WnrkGqGKNY7AoiTtXMNFokAfw6yJDik": {
+          "SignUnderscoreupLambdaVersionAXvupUYrsSFhNZpmag6QPtZS2mjgMuQNsylCi814g4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SignUnderscoreupLambdaFunction"
               },
-              "CodeSha256": "jdM4vupwLT70OgZ9xSppFB3xRcz7H+F5ld+Yg4v3QqA="
+              "CodeSha256": "BEAugSP+MRyjWh03jUr47kE5vZQvip7cTyyIQqQi5eQ="
             }
           },
-          "SignUnderscoreinLambdaVersionzTmUa7jcrxibI3jalAYNgnBrwbSm7qHDSTMLJ5D2oU": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
-            "Properties": {
-              "FunctionName": {
-                "Ref": "SignUnderscoreinLambdaFunction"
-              },
-              "CodeSha256": "IvVc7aitS1y90oy+9IXl+S/i5qhf6AL/FYRwmfm3NUM="
-            }
-          },
-          "CreateShortLinkLambdaVersion8PyZPxvrqw0rWv9eTQsgFuzBevSfzSOSIcGeiJfVFc": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
-            "Properties": {
-              "FunctionName": {
-                "Ref": "CreateShortLinkLambdaFunction"
-              },
-              "CodeSha256": "dqiZUsTpalZtB9hgfY1g3KGqmtaCxYfOkqhkJHiRdhA="
-            }
-          },
-          "CallSQSLambdaVersion5nw1TtZsYQX2s0Eq5GlmMYs96ZrA99Rc4jOX8NjOZw": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
-            "Properties": {
-              "FunctionName": {
-                "Ref": "CallSQSLambdaFunction"
-              },
-              "CodeSha256": "OR/dEfhJu0Vrr+H1KEekcYtIvDZQO+mGLlYhTZZQP3Q="
-            }
-          },
-          "CheckValidLinksLambdaVersionZjaa6nsHNMob3ENBW9L2cxvXy1SG2YaYqQXo3xxVIQ": {
+          "CheckValidLinksLambdaVersionhhyFMziMtbjEWohHIPq5Xzzr2dzz3MIFrcmzFUW0k": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "CheckValidLinksLambdaFunction"
               },
-              "CodeSha256": "WhliukM7TXVhOI3U39VS+OEqAow+QwtDKM7uRGjA8hc="
+              "CodeSha256": "iVZa+HkIEIhIQ7dcG2zku+dUt+8WnhKapTmcxmcSW0s="
+            }
+          },
+          "CallSQSLambdaVersionoIkCiOZ009cntAJFmPLveZuhQwqXnn0KWh6xEzV9L3E": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CallSQSLambdaFunction"
+              },
+              "CodeSha256": "o7voHS+AeC3EncjniYy3TB2hbd8UbznrsBxE/DhpiVY="
+            }
+          },
+          "DeactivateLinksLambdaVersionnhbMcqdEKnQhzbQOoCBVvSvQzJ7m3xzU9cmhO4boJo0": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeactivateLinksLambdaFunction"
+              },
+              "CodeSha256": "fpKRMYXvF0bFSPSVwEW5mXpl3glw4m3O5Mo9yJF66Ao="
+            }
+          },
+          "SignUnderscoreinLambdaVersionlPcEtIT2l1fdYVbc9XX6ElEzup4lsLnZl6KX4rc6qE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SignUnderscoreinLambdaFunction"
+              },
+              "CodeSha256": "NNvhCw9D4Wy52QunLmqHdvWjQx1yHCj8DIr1UyYJjqI="
+            }
+          },
+          "MoveByShortLinkLambdaVersionHJn4fjNnAbNJKr9x0BbXdmt7kXq1kmcI90aoXfwxw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "MoveByShortLinkLambdaFunction"
+              },
+              "CodeSha256": "4THG9F51n6lynAOfIUvqiybLC+D2qBXuvjZ7F+/v6gc="
+            }
+          },
+          "CreateShortLinkLambdaVersionITwKHSrgx1AwxOipI8dwz5d5IRfV46dMYnk4NfBQtw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateShortLinkLambdaFunction"
+              },
+              "CodeSha256": "hHQ9NqoZzu/6QHsKPOOmgT8Qlx+DVZyqBkelua99upg="
             }
           },
           "ApiGatewayRestApi": {
@@ -1421,7 +1529,7 @@
               "Type": "TOKEN"
             }
           },
-          "ApiGatewayDeployment1700240469961": {
+          "ApiGatewayDeployment1700401451407": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -1850,6 +1958,170 @@
               }
             }
           },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "shortLink-aws-typescript-api",
+              "ProtocolType": "HTTP"
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "SwaggerUILambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "SwaggerUILambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationSwaggerUI": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"SwaggerUILambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGetSwagger": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /swagger",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationSwaggerUI"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationSwaggerUI"
+          },
+          "SwaggerJSONLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "SwaggerJSONLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationSwaggerJSON": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"SwaggerJSONLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGetSwaggerjson": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /swagger.json",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationSwaggerJSON"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationSwaggerJSON"
+          },
           "UsersTable": {
             "Type": "AWS::DynamoDB::GlobalTable",
             "Properties": {
@@ -1994,22 +2266,31 @@
               "Name": "sls-aws-typescript-api-shortLink-ServerlessDeploymentBucketName"
             }
           },
+          "SwaggerUILambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SwaggerUILambdaVersionirybImU1fGFY6g6oSnwbDQIaGS8fW7M2NILj0VP994"
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-SwaggerUILambdaFunctionQualifiedArn"
+            }
+          },
+          "SwaggerJSONLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SwaggerJSONLambdaVersionl6ygLAL3RtRXKKSrR9gqjUKZFm2x1iS9lSORgFDYi4"
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-SwaggerJSONLambdaFunctionQualifiedArn"
+            }
+          },
           "ListAllLinksLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ListAllLinksLambdaVersiono1cE4bRmMUlijldAleuHoRGCdHuKxPfzb5VqKUkaqLQ"
+              "Ref": "ListAllLinksLambdaVersiondaPdLGcxUqJZXe3knlJqZrQ1ziQWpas2q9UinC7QaQ"
             },
             "Export": {
               "Name": "sls-aws-typescript-api-shortLink-ListAllLinksLambdaFunctionQualifiedArn"
-            }
-          },
-          "DeactivateLinksLambdaFunctionQualifiedArn": {
-            "Description": "Current Lambda function version",
-            "Value": {
-              "Ref": "DeactivateLinksLambdaVersionWZeuCsJnYj29mSlIO8PpoEyOEFp0GrJlvCEbjBLcfU"
-            },
-            "Export": {
-              "Name": "sls-aws-typescript-api-shortLink-DeactivateLinksLambdaFunctionQualifiedArn"
             }
           },
           "CustomAuthorizerLambdaFunctionQualifiedArn": {
@@ -2024,64 +2305,73 @@
           "VerifyUserLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "VerifyUserLambdaVersiondlmUxFiZUoyB1yASd0XRxAZWBXTd5WETu4aVzK3W4"
+              "Ref": "VerifyUserLambdaVersionDX15HSIlholY3YTqkk4wyh6pMAhggfBu8b0AuWU6M"
             },
             "Export": {
               "Name": "sls-aws-typescript-api-shortLink-VerifyUserLambdaFunctionQualifiedArn"
             }
           },
-          "MoveByShortLinkLambdaFunctionQualifiedArn": {
-            "Description": "Current Lambda function version",
-            "Value": {
-              "Ref": "MoveByShortLinkLambdaVersionNPPu52vHJhfJ1WgpXLO0H6XqE6cfP7adwRr8Dl2w"
-            },
-            "Export": {
-              "Name": "sls-aws-typescript-api-shortLink-MoveByShortLinkLambdaFunctionQualifiedArn"
-            }
-          },
           "SignUnderscoreupLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SignUnderscoreupLambdaVersiontrzJp537oc5WnrkGqGKNY7AoiTtXMNFokAfw6yJDik"
+              "Ref": "SignUnderscoreupLambdaVersionAXvupUYrsSFhNZpmag6QPtZS2mjgMuQNsylCi814g4"
             },
             "Export": {
               "Name": "sls-aws-typescript-api-shortLink-SignUnderscoreupLambdaFunctionQualifiedArn"
             }
           },
-          "SignUnderscoreinLambdaFunctionQualifiedArn": {
+          "CheckValidLinksLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SignUnderscoreinLambdaVersionzTmUa7jcrxibI3jalAYNgnBrwbSm7qHDSTMLJ5D2oU"
+              "Ref": "CheckValidLinksLambdaVersionhhyFMziMtbjEWohHIPq5Xzzr2dzz3MIFrcmzFUW0k"
             },
             "Export": {
-              "Name": "sls-aws-typescript-api-shortLink-SignUnderscoreinLambdaFunctionQualifiedArn"
-            }
-          },
-          "CreateShortLinkLambdaFunctionQualifiedArn": {
-            "Description": "Current Lambda function version",
-            "Value": {
-              "Ref": "CreateShortLinkLambdaVersion8PyZPxvrqw0rWv9eTQsgFuzBevSfzSOSIcGeiJfVFc"
-            },
-            "Export": {
-              "Name": "sls-aws-typescript-api-shortLink-CreateShortLinkLambdaFunctionQualifiedArn"
+              "Name": "sls-aws-typescript-api-shortLink-CheckValidLinksLambdaFunctionQualifiedArn"
             }
           },
           "CallSQSLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CallSQSLambdaVersion5nw1TtZsYQX2s0Eq5GlmMYs96ZrA99Rc4jOX8NjOZw"
+              "Ref": "CallSQSLambdaVersionoIkCiOZ009cntAJFmPLveZuhQwqXnn0KWh6xEzV9L3E"
             },
             "Export": {
               "Name": "sls-aws-typescript-api-shortLink-CallSQSLambdaFunctionQualifiedArn"
             }
           },
-          "CheckValidLinksLambdaFunctionQualifiedArn": {
+          "DeactivateLinksLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "CheckValidLinksLambdaVersionZjaa6nsHNMob3ENBW9L2cxvXy1SG2YaYqQXo3xxVIQ"
+              "Ref": "DeactivateLinksLambdaVersionnhbMcqdEKnQhzbQOoCBVvSvQzJ7m3xzU9cmhO4boJo0"
             },
             "Export": {
-              "Name": "sls-aws-typescript-api-shortLink-CheckValidLinksLambdaFunctionQualifiedArn"
+              "Name": "sls-aws-typescript-api-shortLink-DeactivateLinksLambdaFunctionQualifiedArn"
+            }
+          },
+          "SignUnderscoreinLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SignUnderscoreinLambdaVersionlPcEtIT2l1fdYVbc9XX6ElEzup4lsLnZl6KX4rc6qE"
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-SignUnderscoreinLambdaFunctionQualifiedArn"
+            }
+          },
+          "MoveByShortLinkLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "MoveByShortLinkLambdaVersionHJn4fjNnAbNJKr9x0BbXdmt7kXq1kmcI90aoXfwxw"
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-MoveByShortLinkLambdaFunctionQualifiedArn"
+            }
+          },
+          "CreateShortLinkLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateShortLinkLambdaVersionITwKHSrgx1AwxOipI8dwz5d5IRfV46dMYnk4NfBQtw"
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-CreateShortLinkLambdaFunctionQualifiedArn"
             }
           },
           "ServiceEndpoint": {
@@ -2108,6 +2398,40 @@
             },
             "Export": {
               "Name": "sls-aws-typescript-api-shortLink-ServiceEndpoint"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-aws-typescript-api-shortLink-HttpApiUrl"
             }
           }
         }
@@ -2197,6 +2521,13 @@
       "vpc": {}
     },
     "custom": {
+      "autoswagger": {
+        "typefiles": [
+          "./src/models/types/UserType.d.ts",
+          "./src/models/types/LinkType.d.ts"
+        ],
+        "basePath": "/shortLink"
+      },
       "dotenv": {
         "path": "./.env"
       },
@@ -2217,6 +2548,7 @@
       }
     },
     "plugins": [
+      "serverless-auto-swagger",
       "serverless-esbuild",
       "serverless-dotenv-plugin",
       "serverless-offline"
@@ -2243,6 +2575,21 @@
             "http": {
               "method": "post",
               "path": "user/sign_up",
+              "summary": "Sign up a new user",
+              "description": "Endpoint to register a new user, send message to email and back access_token.",
+              "bodyType": "BodySignInUpUser",
+              "responseData": {
+                "200": {
+                  "description": "Successfully signed up. Please check your email",
+                  "bodyType": "ResponseSingUpUser"
+                },
+                "401": {
+                  "description": "User can get exeption:\nThe email is empty.\nThe password is empty.\nThe email is unvalid, please check your email.\nThe password is unvalid. Your password should contain at least one number, capital letters, and small letters. The minimum size of the password should be 8 characters.\nThe user with this email already exist\n"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2255,7 +2602,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "SignUnderscoreupLambdaVersiontrzJp537oc5WnrkGqGKNY7AoiTtXMNFokAfw6yJDik"
+        "versionLogicalId": "SignUnderscoreupLambdaVersionAXvupUYrsSFhNZpmag6QPtZS2mjgMuQNsylCi814g4"
       },
       "sign_in": {
         "handler": "src/controllers/user/sign_in.handler",
@@ -2264,6 +2611,24 @@
             "http": {
               "method": "post",
               "path": "user/sign_in",
+              "summary": "Sign in the user",
+              "description": "Endpoint login the user, back access_token.",
+              "bodyType": "BodySignInUpUser",
+              "responseData": {
+                "200": {
+                  "description": "Successfully signed in",
+                  "bodyType": "ResponseSignInUser"
+                },
+                "401": {
+                  "description": "User can get exeption:\nThe email is empty.\nThe password is empty.\nThe email is invalid, please check your email.\nThe password is invalid. Your password should contain at least one number, capital letters, and small letters. The minimum size of the password should be 8 characters.\nUser isn't verified. Please check your email to verify the link.\n"
+                },
+                "404": {
+                  "description": "The user with this email don't find"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2276,7 +2641,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "SignUnderscoreinLambdaVersionzTmUa7jcrxibI3jalAYNgnBrwbSm7qHDSTMLJ5D2oU"
+        "versionLogicalId": "SignUnderscoreinLambdaVersionlPcEtIT2l1fdYVbc9XX6ElEzup4lsLnZl6KX4rc6qE"
       },
       "verifyUser": {
         "handler": "src/controllers/user/verifyUser.handler",
@@ -2285,6 +2650,20 @@
             "http": {
               "method": "get",
               "path": "verify/{proxy+}",
+              "summary": "Verify the user using link",
+              "description": "Endpoint verify the user",
+              "responseData": {
+                "200": {
+                  "description": "Successfully verify",
+                  "bodyType": "ResponseVerifyUser"
+                },
+                "401": {
+                  "description": "User can get exeption:\nVerify link is unvalid.\nThe email has been already verified.\n"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2297,7 +2676,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "VerifyUserLambdaVersiondlmUxFiZUoyB1yASd0XRxAZWBXTd5WETu4aVzK3W4"
+        "versionLogicalId": "VerifyUserLambdaVersionDX15HSIlholY3YTqkk4wyh6pMAhggfBu8b0AuWU6M"
       },
       "createShortLink": {
         "handler": "src/controllers/links/createShortLink.handler",
@@ -2331,6 +2710,28 @@
                 ],
                 "allowCredentials": false
               },
+              "summary": "Create short link using long link",
+              "description": "Endpoint create a new shortLink with parametr of time.",
+              "headerParameters": {
+                "Authorization": {
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer access_token"
+                }
+              },
+              "bodyType": "BodyCreateShortLink",
+              "responseData": {
+                "200": {
+                  "description": "Successfully create short link",
+                  "bodyType": "ResponseCreateShortLink"
+                },
+                "401": {
+                  "description": "User can get exeption:\nThe link is empty.\nThe time is empty. Possible time one-time, 1 day, 3 days, 7 days.\nThe link of user doen't work.\nThe time is unvalid. Possible time one-time, 1 day, 3 days, 7 days\n"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2343,7 +2744,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "CreateShortLinkLambdaVersion8PyZPxvrqw0rWv9eTQsgFuzBevSfzSOSIcGeiJfVFc"
+        "versionLogicalId": "CreateShortLinkLambdaVersionITwKHSrgx1AwxOipI8dwz5d5IRfV46dMYnk4NfBQtw"
       },
       "listAllLinks": {
         "handler": "src/controllers/links/listAllLinks.handler",
@@ -2377,6 +2778,27 @@
                 ],
                 "allowCredentials": false
               },
+              "summary": "Send list of links which created in user account",
+              "description": "Endpoint send request to list of links which created in user account",
+              "headerParameters": {
+                "Authorization": {
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer access_token"
+                }
+              },
+              "responseData": {
+                "200": {
+                  "description": "Successfully create short link",
+                  "bodyType": "ResponseListShortLink"
+                },
+                "404": {
+                  "description": "The user list of link hasn't found. Please create you short link"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2389,7 +2811,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "ListAllLinksLambdaVersiono1cE4bRmMUlijldAleuHoRGCdHuKxPfzb5VqKUkaqLQ"
+        "versionLogicalId": "ListAllLinksLambdaVersiondaPdLGcxUqJZXe3knlJqZrQ1ziQWpas2q9UinC7QaQ"
       },
       "deactivateLinks": {
         "handler": "src/controllers/links/deactivateLink.handler",
@@ -2423,6 +2845,31 @@
                 ],
                 "allowCredentials": false
               },
+              "summary": "Deactivate short link",
+              "description": "Endpoint deactivate a shortLink by link id.",
+              "headerParameters": {
+                "Authorization": {
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer access_token"
+                }
+              },
+              "bodyType": "BodyDeactivateShortLink",
+              "responseData": {
+                "200": {
+                  "description": "Successfully deactovate short link",
+                  "bodyType": "ResponseDeactivateShortLink"
+                },
+                "401": {
+                  "description": "User can get exeption:\nThe link_id is empty\nThe link has been already deactivated\n"
+                },
+                "404": {
+                  "description": "The link didn't find"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2435,7 +2882,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "DeactivateLinksLambdaVersionWZeuCsJnYj29mSlIO8PpoEyOEFp0GrJlvCEbjBLcfU"
+        "versionLogicalId": "DeactivateLinksLambdaVersionnhbMcqdEKnQhzbQOoCBVvSvQzJ7m3xzU9cmhO4boJo0"
       },
       "moveByShortLink": {
         "handler": "src/controllers/links/moveByShortLink.handler",
@@ -2444,6 +2891,23 @@
             "http": {
               "method": "get",
               "path": "{proxy+}",
+              "summary": "Move by short link",
+              "description": "Endpoint move by short link and count requests.",
+              "responseData": {
+                "302": {
+                  "description": "Successfully move by short link",
+                  "bodyType": "ResponseMovebyShortLink"
+                },
+                "401": {
+                  "description": "The link has been already deactivated"
+                },
+                "404": {
+                  "description": "The link didn't find"
+                },
+                "500": {
+                  "description": "Internal server error"
+                }
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -2456,7 +2920,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "MoveByShortLinkLambdaVersionNPPu52vHJhfJ1WgpXLO0H6XqE6cfP7adwRr8Dl2w"
+        "versionLogicalId": "MoveByShortLinkLambdaVersionHJn4fjNnAbNJKr9x0BbXdmt7kXq1kmcI90aoXfwxw"
       },
       "checkValidLinks": {
         "handler": "src/controllers/links/checkValidLinks.handler",
@@ -2475,7 +2939,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "CheckValidLinksLambdaVersionZjaa6nsHNMob3ENBW9L2cxvXy1SG2YaYqQXo3xxVIQ"
+        "versionLogicalId": "CheckValidLinksLambdaVersionhhyFMziMtbjEWohHIPq5Xzzr2dzz3MIFrcmzFUW0k"
       },
       "callSQS": {
         "handler": "src/controllers/links/callSQS.handler",
@@ -2494,7 +2958,53 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "CallSQSLambdaVersion5nw1TtZsYQX2s0Eq5GlmMYs96ZrA99Rc4jOX8NjOZw"
+        "versionLogicalId": "CallSQSLambdaVersionoIkCiOZ009cntAJFmPLveZuhQwqXnn0KWh6xEzV9L3E"
+      },
+      "swaggerUI": {
+        "name": "aws-typescript-api-shortLink-swagger-ui",
+        "handler": "swagger/swagger-html.handler",
+        "disableLogs": true,
+        "events": [
+          {
+            "httpApi": {
+              "method": "get",
+              "path": "/swagger"
+            },
+            "resolvedMethod": "GET",
+            "resolvedPath": "/swagger"
+          }
+        ],
+        "package": {
+          "artifact": ".serverless\\swaggerUI.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs18.x",
+        "vpc": {},
+        "versionLogicalId": "SwaggerUILambdaVersionirybImU1fGFY6g6oSnwbDQIaGS8fW7M2NILj0VP994"
+      },
+      "swaggerJSON": {
+        "name": "aws-typescript-api-shortLink-swagger-json",
+        "handler": "swagger/swagger-json.handler",
+        "disableLogs": true,
+        "events": [
+          {
+            "httpApi": {
+              "method": "get",
+              "path": "/swagger.json"
+            },
+            "resolvedMethod": "GET",
+            "resolvedPath": "/swagger.json"
+          }
+        ],
+        "package": {
+          "artifact": ".serverless\\swaggerJSON.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs18.x",
+        "vpc": {},
+        "versionLogicalId": "SwaggerJSONLambdaVersionl6ygLAL3RtRXKKSrR9gqjUKZFm2x1iS9lSORgFDYi4"
       }
     },
     "resources": {
@@ -2648,7 +3158,36 @@
         "$ref": "$[\"service\"][\"resources\"]"
       },
       "functions": {
-        "$ref": "$[\"service\"][\"functions\"]"
+        "customAuthorizer": {
+          "$ref": "$[\"service\"][\"functions\"][\"customAuthorizer\"]"
+        },
+        "sign_up": {
+          "$ref": "$[\"service\"][\"functions\"][\"sign_up\"]"
+        },
+        "sign_in": {
+          "$ref": "$[\"service\"][\"functions\"][\"sign_in\"]"
+        },
+        "verifyUser": {
+          "$ref": "$[\"service\"][\"functions\"][\"verifyUser\"]"
+        },
+        "createShortLink": {
+          "$ref": "$[\"service\"][\"functions\"][\"createShortLink\"]"
+        },
+        "listAllLinks": {
+          "$ref": "$[\"service\"][\"functions\"][\"listAllLinks\"]"
+        },
+        "deactivateLinks": {
+          "$ref": "$[\"service\"][\"functions\"][\"deactivateLinks\"]"
+        },
+        "moveByShortLink": {
+          "$ref": "$[\"service\"][\"functions\"][\"moveByShortLink\"]"
+        },
+        "checkValidLinks": {
+          "$ref": "$[\"service\"][\"functions\"][\"checkValidLinks\"]"
+        },
+        "callSQS": {
+          "$ref": "$[\"service\"][\"functions\"][\"callSQS\"]"
+        }
       },
       "package": {
         "individually": true,
@@ -2666,7 +3205,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/aws-typescript-api/shortLink/1700240489968-2023-11-17T17:01:29.968Z",
+    "artifactDirectoryName": "serverless/aws-typescript-api/shortLink/1700401461767-2023-11-19T13:44:21.767Z",
     "artifact": ""
   }
 }

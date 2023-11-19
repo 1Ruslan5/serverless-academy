@@ -3,5 +3,8 @@ node_modules
 
 # esbuild directories
 .esbuild
+.serverless
+
+swagger
 
 .env

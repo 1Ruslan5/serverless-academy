@@ -13,14 +13,14 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         const { link_id } = JSON.parse(event.body || '');
         const { email } = event.requestContext.authorizer;
 
-        if (!link_id) return jsonResponse(401, { error: messages.emptyShortLink });
+        if (!link_id) return jsonResponse(401, { error: messages.emptyShortLinkId });
 
         const existLink = await dynamodb.findLinkById(link_id);
         if (!existLink) return jsonResponse(401, { error: messages.linkNotFound });
-        if (!existLink.Items[0].active) return jsonResponse(401, { error: messages.linkAlreadyDeactivated });
+        if (!existLink.Items[0].active) return jsonResponse(404, { error: messages.linkAlreadyDeactivated });
 
         const deactiveLink = await dynamodb.deactivateLink(link_id);
-        if (!deactiveLink) return jsonResponse(401, { error: messages.linkNotFound });
+        if (!deactiveLink) return jsonResponse(404, { error: messages.linkNotFound });
 
         await sqs.sendMessageToSQS({email, message: messagesSES("Deactivated notification", existLink.Items[0].short_link)})
 

@@ -111,24 +111,78 @@ resources:
 functions:
   customAuthorizer:
     handler: src/controllers/user/authorizer.handler
+
   sign_up:
     handler: src/controllers/user/sign_up.handler
     events:
       - http:
           method: "post"
           path: "user/sign_up"
+          summary: Sign up a new user
+          description: Endpoint to register a new user, send message to email and back access_token.
+          bodyType: 'BodySignInUpUser'
+          responseData: 
+              200:
+                description: Successfully signed up. Please check your email
+                bodyType: 'ResponseSingUpUser'
+              401:
+                description: |
+                    User can get exeption:
+                    The email is empty.
+                    The password is empty.
+                    The email is unvalid, please check your email.
+                    The password is unvalid. Your password should contain at least one number, capital letters, and small letters. The minimum size of the password should be 8 characters.
+                    The user with this email already exist
+              500:
+                description: Internal server error
+
   sign_in:
     handler: src/controllers/user/sign_in.handler
     events:
       - http:
           method: "post"
           path: "user/sign_in"
+          summary: "Sign in the user"
+          description: "Endpoint login the user, back access_token."
+          bodyType: 'BodySignInUpUser'
+          responseData: 
+              200:
+                description: Successfully signed in
+                bodyType: 'ResponseSignInUser'
+              401:
+                description: |
+                  User can get exeption:
+                  The email is empty.
+                  The password is empty.
+                  The email is invalid, please check your email.
+                  The password is invalid. Your password should contain at least one number, capital letters, and small letters. The minimum size of the password should be 8 characters.
+                  User isn't verified. Please check your email to verify the link.
+              404:
+                description:
+                    The user with this email don't find
+              500:
+                description: Internal server error
+
   verifyUser:
     handler: src/controllers/user/verifyUser.handler
     events:
       - http:
           method: "get"
           path: "verify/{proxy+}"
+          summary: "Verify the user using link"
+          description: "Endpoint verify the user"
+          responseData: 
+              200:
+                description: Successfully verify
+                bodyType: 'ResponseVerifyUser'
+              401:
+                description: |
+                  User can get exeption:
+                  Verify link is unvalid.
+                  The email has been already verified.
+              500:
+                description: Internal server error
+                
   createShortLink:
     handler: src/controllers/links/createShortLink.handler
     events:
@@ -137,6 +191,29 @@ functions:
           path: "link/createShortLink"
           authorizer: customAuthorizer
           cors: true
+          summary: Create short link using long link
+          description: Endpoint create a new shortLink with parametr of time.
+          headerParameters: 
+              Authorization: 
+                required: true
+                type: 'string'
+                description: 'Bearer access_token'
+  
+          bodyType: 'BodyCreateShortLink'
+          responseData: 
+              200:
+                description: Successfully create short link
+                bodyType: 'ResponseCreateShortLink'
+              401:
+                description: |
+                    User can get exeption:
+                    The link is empty.
+                    The time is empty. Possible time one-time, 1 day, 3 days, 7 days.
+                    The link of user doen't work.
+                    The time is unvalid. Possible time one-time, 1 day, 3 days, 7 days
+              500:
+                description: Internal server error
+  
   listAllLinks:
     handler: src/controllers/links/listAllLinks.handler
     events:
@@ -145,6 +222,22 @@ functions:
           path: "link/listAllLinks"
           authorizer: customAuthorizer
           cors: true
+          summary: Send list of links which created in user account
+          description: Endpoint send request to list of links which created in user account
+          headerParameters: 
+              Authorization: 
+                required: true
+                type: 'string'
+                description: 'Bearer access_token'
+          responseData: 
+              200:
+                description: Successfully create short link
+                bodyType: 'ResponseListShortLink'
+              404:
+                description: The user list of link hasn't found. Please create you short link
+              500:
+                description: Internal server error
+
   deactivateLinks:
     handler: src/controllers/links/deactivateLink.handler
     events:
@@ -153,12 +246,47 @@ functions:
           path: "link/deactivateLink"
           authorizer: customAuthorizer
           cors: true
+          summary: Deactivate short link
+          description: Endpoint deactivate a shortLink by link id.
+          headerParameters: 
+              Authorization: 
+                required: true
+                type: 'string'
+                description: 'Bearer access_token'
+          bodyType: 'BodyDeactivateShortLink'
+          responseData: 
+              200:
+                description: Successfully deactovate short link
+                bodyType: 'ResponseDeactivateShortLink'
+              401:
+                description: |
+                    User can get exeption:
+                    The link_id is empty
+                    The link has been already deactivated
+              404:
+                description: The link didn't find
+              500:
+                description: Internal server error
+
   moveByShortLink:
     handler: src/controllers/links/moveByShortLink.handler
     events:
       - http:
           method: "get"
           path: "{proxy+}"
+          summary: Move by short link
+          description: Endpoint move by short link and count requests.
+          responseData: 
+              302:
+                description: Successfully move by short link
+                bodyType: 'ResponseMovebyShortLink'
+              401:
+                description: The link has been already deactivated
+              404:
+                description: The link didn't find
+              500:
+                description: Internal server error
+
   checkValidLinks:
     handler: src/controllers/links/checkValidLinks.handler
     events:
@@ -174,8 +302,13 @@ package:
   individually: true
 
 custom:
+  autoswagger:
+    typefiles: ['./src/models/types-swagger/UserType.d.ts', './src/models/types-swagger/LinkType.d.ts']
+    basePath: '/shortLink'
+
   dotenv:
     path: "./.env"
+
   esbuild:
     bundle: true
     minify: false
@@ -186,10 +319,12 @@ custom:
       require.resolve: null
     platform: node
     concurrency: 10
+
   serverless-offline:
     httpPort: 3000
 
 plugins:
+  - serverless-auto-swagger
   - serverless-esbuild
   - serverless-dotenv-plugin
   - serverless-offline

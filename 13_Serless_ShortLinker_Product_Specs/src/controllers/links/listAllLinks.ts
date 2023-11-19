@@ -12,7 +12,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         const { user_id } = event.requestContext.authorizer;
 
         const existLinks = await dynamodb.findLinksByUserId(user_id);
-        if(existLinks.Items.length[0] === 0) return jsonResponse(200, {messages: messages.emptyUserListLinks});
+        if(existLinks.Items.length === 0) return jsonResponse(404, {messages: messages.notFoundListLinks});
 
         const arrayLinks = existLinks.Items.map(link => {
             return {

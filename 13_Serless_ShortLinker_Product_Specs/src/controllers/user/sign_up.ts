@@ -49,7 +49,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
         const accessToken = jwt.generateToken({ user_id: idUser, email }, { expiresIn: '1h' });
 
-        return jsonResponse(200, { messages: messages.checkUserEmail, accessToken })
+        return jsonResponse(200, { messages: messages.successSingUp, accessToken })
     } catch (err) {
         console.log(err);
         return jsonResponse(500, { error: messages.serverError });

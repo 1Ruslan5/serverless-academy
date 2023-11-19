@@ -18,18 +18,18 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         const shortLink = `${protocol}://${host}/shortLink${path}`;
 
         const links = await dynamodb.findLongLinkByShort(shortLink);
-        if (!links) return jsonResponse(404, { message: messages.linkNotFound })
-        if (links.Items.length === 0) return jsonResponse(404, { message: messages.linkNotFound })
+        if (!links) return jsonResponse(404, { error: messages.linkNotFound })
+        if (links.Items.length === 0) return jsonResponse(404, { error: messages.linkNotFound })
 
         const activeLink = links.Items.find(link => link.active);
-        if(!activeLink) return jsonResponse(401, { message: messages.linkAlreadyDeactivated })
+        if(!activeLink) return jsonResponse(401, { error: messages.linkAlreadyDeactivated })
         if (!checkExpire(activeLink.time, activeLink.time_to_expired, activeLink.requestsCount)) {
             await dynamodb.deactivateLink(activeLink.link_id);
-            sqs.sendMessageToSQS({email: activeLink.email, message: messagesSES("Deactivated notification", activeLink.short_link)})
-            return jsonResponse(401, { message: messages.linkAlreadyDeactivated })
+            await sqs.sendMessageToSQS({email: activeLink.email, message: messagesSES("Deactivated notification", activeLink.short_link)})
+            return jsonResponse(401, { error: messages.linkAlreadyDeactivated })
         }
         const addRequest = await dynamodb.addRequst(activeLink.link_id, activeLink.requestsCount);
-        if (!addRequest) return jsonResponse(401, { message: messages.serverError })
+        if (!addRequest) return jsonResponse(500, { error: messages.serverError })
         
         return {
             statusCode: 302,

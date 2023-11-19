@@ -48,7 +48,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         const createLink = await dynamodb.createLink(link);
         if (!createLink) return jsonResponse(500, { message: messages.serverError })
 
-        return jsonResponse(200, { idLink: link_id, shortLink: short_link, timeToValid: convertTime(time, date) })
+        return jsonResponse(200, { idLink: link_id, shortLink: short_link, timeToValid: convertTime(time, date), message: messages.successCreateShortLink})
     } catch (err) {
         console.log(err)
         return jsonResponse(500, { error: messages.serverError })
